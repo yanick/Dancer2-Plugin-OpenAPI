@@ -8,14 +8,30 @@ use  Test::WWW::Mechanize::PSGI;
 use Test::More tests => 6;
 use Test::Deep;
 
+    use Dancer2;
+    use Dancer2::Plugin::OpenAPI;
 
-use Dancer2;
-use Dancer2::Plugin::OpenAPI;
+    set serializer => 'JSON';
 
-set serializer => 'JSON';
-Dancer2::Plugin::OpenAPI->instance->{main_api_module_content} = '';
+    swagger_path
+        get '/stuff' => sub { };
 
-$::mech = Test::WWW::Mechanize::PSGI->new( app => TestMe->to_app );
+    swagger_path {
+        description => 'standard',
+    },
+    get '/description/standard' => sub {};
+
+    swagger_path q{
+        shortcut
+
+        with some blahs
+
+            And this is inlined
+    }, 
+    get '/description/first_arg' => sub {};
+
+my $app = TestMe->to_app;
+$::mech = Test::WWW::Mechanize::PSGI->new( app => $app );
 
 sub swagger_path_test {
     my $name = shift;
@@ -27,22 +43,6 @@ sub swagger_path_test {
     };
 }
 
-swagger_path
-    get '/stuff' => sub { };
-
-swagger_path {
-    description => 'standard',
-},
-get '/description/standard' => sub {};
-
-swagger_path q{
-    shortcut
-
-    with some blahs
-
-        And this is inlined
-}, 
-get '/description/first_arg' => sub {};
 
 swagger_path_test '/parameters/standard' => {
     parameters => [
@@ -94,7 +94,8 @@ swagger_path_test '/parameters/array_with_keys', {
     ];
 };
 
-my $doc = Dancer2::Plugin::OpenAPI->instance->doc;
+my ( $instance ) = grep { ref($_) =~ /OpenAPI/ } @{ app->plugins };
+my $doc = $instance->doc;
 
 is $doc->{paths}{'/description/standard'}{get}{description} => 'standard', '{ desc => blahblah }';
 like $doc->{paths}{'/description/first_arg'}{get}{description} => qr/^shortcut/, ' blahblah => { ... }';

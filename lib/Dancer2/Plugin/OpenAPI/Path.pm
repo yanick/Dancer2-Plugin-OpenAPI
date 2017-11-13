@@ -32,7 +32,8 @@ has method => sub {
 };
 
 has path => sub {
-    dancer_pattern_to_swagger_path( $_[0]->route->pattern );
+    $DB::single = 1;
+    dancer_pattern_to_swagger_path( $_[0]->route->spec_route );
 };
 
 has responses => ( predicate => 1);

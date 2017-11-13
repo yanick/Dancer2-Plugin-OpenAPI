@@ -20,7 +20,6 @@ use Dancer2::Plugin::OpenAPI::Path;
 
 use Moo;
 
-with 'MooX::Singleton';
 use MooseX::MungeHas 'is_ro';
 
 use Path::Tiny;
@@ -57,12 +56,14 @@ has doc => (
     },
 );
 
+our $FIRST_LOADED;
+
 has main_api_module => (
     is => 'ro',
     lazy => 1,
-    default => sub {
-        plugin_setting->{main_api_module}
-            || $Dancer2::Plugin::OpenAPI::FIRST_LOADED;
+    from_config => 1,
+    default => sub { 
+        $Dancer2::Plugin::OpenAPI::FIRST_LOADED ||= caller;
     },
 );
 
@@ -80,21 +81,20 @@ has main_api_module_content => (
 has show_ui => (
     is => 'ro',
     lazy => 1,
-    default => sub { plugin_setting->{show_ui} // 1 },
+    from_config => sub { 1 },
 );
 
 has ui_url => (
     is => 'ro',
     lazy => 1,
-    default => sub { plugin_setting->{ui_url} // '/doc' },
+    from_config => sub { '/doc' },
 );
 
 has ui_dir => (
     is => 'ro',
     lazy => 1,
-    default => sub { 
+    from_config => sub { 
         Path::Tiny::path(
-            plugin_setting->{ui_dir} ||
                 File::ShareDir::Tarball::dist_dir('Dancer-Plugin-Swagger')
         )
     },
@@ -105,15 +105,15 @@ has auto_discover_skip => (
     lazy => 1,
     default => sub { [
             map { /^qr/ ? eval $_ : $_ }
-        @{ plugin_setting->{auto_discover_skip} || [
+        @{ $_[0]->config->{auto_discover_skip} || [
             '/swagger.json', ( 'qr!' . $_[0]->ui_url . '!' ) x $_[0]->show_ui
         ] }
     ];
     },
 );
 
-has validate_response => sub { plugin_setting->{validate_response} };
-has strict_validation => sub { plugin_setting->{strict_validation} };
+has validate_response => ( from_config => 1 );
+has strict_validation => ( from_config => 1 );
 
 
 sub BUILD {
@@ -192,11 +192,13 @@ sub swagger_auto_discover :PluginKeyword {
 sub swagger_path :PluginKeyword {
     my $plugin = shift;
 
+    $DB::single = 1;
     my @routes;
-    push @routes, pop @_ while eval { $_[-1]->isa('Dancer2::Route') };
+    push @routes, pop @_ while eval { $_[-1]->isa('Dancer2::Core::Route') };
 
     # we don't process HEAD
     @routes = grep { $_->method ne 'head' } @routes;
+
 
     my $description;
     if( @_ and not ref $_[0] ) {
@@ -243,12 +245,12 @@ sub swagger_path :PluginKeyword {
 
         $path->add_to_doc( $plugin->doc );
 
-        my $code = $route->code;
-        
-        $route->code(sub {
+        my $code = $route->{code};
+        # TODO change this so I don't play in D2's guts directly
+        $route->{code} = sub {
             local $Dancer2::Plugin::OpenAPI::THIS_ACTION = $path;
             $code->();
-        });
+        };
     }
 };
 
