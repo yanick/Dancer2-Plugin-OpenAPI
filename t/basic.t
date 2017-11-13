@@ -9,14 +9,13 @@ use Test::More tests => 6;
 use Test::Deep;
 
 
-use Dancer ':tests';
-
-use Dancer::Plugin::Swagger;
+use Dancer2;
+use Dancer2::Plugin::OpenAPI;
 
 set serializer => 'JSON';
-Dancer::Plugin::Swagger->instance->{main_api_module_content} = '';
+Dancer2::Plugin::OpenAPI->instance->{main_api_module_content} = '';
 
-$::mech = Test::WWW::Mechanize::PSGI->new( app => Dancer::Handler->psgi_app );
+$::mech = Test::WWW::Mechanize::PSGI->new( app => TestMe->to_app );
 
 sub swagger_path_test {
     my $name = shift;
@@ -51,7 +50,7 @@ swagger_path_test '/parameters/standard' => {
         { name => 'bar', in => 'query', type => 'string' },
     ],
 }, sub {
-    cmp_deeply $Dancer::Plugin::Swagger::THIS_ACTION->parameters, [
+    cmp_deeply $Dancer2::Plugin::OpenAPI::THIS_ACTION->parameters, [
         { name => 'foo', in => 'query', type => 'string' },
         { name => 'bar', in => 'query', type => 'string' },
     ];
@@ -63,7 +62,7 @@ swagger_path_test '/parameters/hash', {
         bar => { in => 'query', type => 'string' },
     },
 }, sub {
-    cmp_deeply $Dancer::Plugin::Swagger::THIS_ACTION->{parameters}, [
+    cmp_deeply $Dancer2::Plugin::OpenAPI::THIS_ACTION->{parameters}, [
         { name => 'bar', in => 'query', type => 'string' },
         { name => 'foo', in => 'query', type => 'string' },
     ];
@@ -75,7 +74,7 @@ swagger_path_test '/parameters/defaults', {
         bar => { type => 'string' },
     },
 }, sub {
-    cmp_deeply $Dancer::Plugin::Swagger::THIS_ACTION->parameters, [
+    cmp_deeply $Dancer2::Plugin::OpenAPI::THIS_ACTION->parameters, [
         { name => 'bar', in => 'query', type => 'string' },
         { name => 'foo', in => 'query', type => 'string', description => 'FOO' },
     ];
@@ -88,14 +87,14 @@ swagger_path_test '/parameters/array_with_keys', {
         { name => 'baz' },
     ],
 }, sub {
-    cmp_deeply $Dancer::Plugin::Swagger::THIS_ACTION->parameters, [
+    cmp_deeply $Dancer2::Plugin::OpenAPI::THIS_ACTION->parameters, [
         { name => 'foo', in => 'query', type => 'string', description => 'FOO' },
         { name => 'bar', in => 'query', type => 'string' },
         { name => 'baz', in => 'query', type => 'string' },
     ];
 };
 
-my $doc = Dancer::Plugin::Swagger->instance->doc;
+my $doc = Dancer2::Plugin::OpenAPI->instance->doc;
 
 is $doc->{paths}{'/description/standard'}{get}{description} => 'standard', '{ desc => blahblah }';
 like $doc->{paths}{'/description/first_arg'}{get}{description} => qr/^shortcut/, ' blahblah => { ... }';

@@ -1,6 +1,6 @@
 ^dist.ini
 ^MANIFEST.SKIP
-Dancer-Plugin-Swagger.*
+Dancer2-Plugin-OpenAPI.*
 ^\.gitignore
 ^\.git
 ^\.build
