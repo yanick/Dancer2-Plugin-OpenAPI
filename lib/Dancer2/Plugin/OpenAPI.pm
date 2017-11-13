@@ -26,11 +26,6 @@ use MooseX::MungeHas 'is_ro';
 use Path::Tiny;
 use File::ShareDir::Tarball;
 
-sub import {
-    $Dancer2::Plugin::OpenAPI::FIRST_LOADED ||= caller;
-    goto &Exporter::import;
-}
-
 has doc => (
     is => 'ro',
     lazy => 1,
@@ -120,45 +115,61 @@ has auto_discover_skip => (
 has validate_response => sub { plugin_setting->{validate_response} };
 has strict_validation => sub { plugin_setting->{strict_validation} };
 
-my $plugin = __PACKAGE__->instance;
 
-if ( $plugin->show_ui ) {
-    my $base_url = $plugin->ui_url;
+sub BUILD {
+    my $self = shift;
 
-    get $base_url => sub { redirect $base_url . '/?url=/swagger.json' };
+    # TODO make the doc url configurable
+    $self->app->add_route(
+        method => 'get',
+        regexp => '/swagger.json',
+        code => sub { $self->doc },
+    );
 
-    get $base_url . '/' => sub {
-        my $file = $plugin->ui_dir->child('index.html');
+    if ( $self->show_ui ) {
+        my $base_url = $self->ui_url;
 
+        $self->app->add_route(
+            method => 'get',
+            regexp => $base_url,
+            code => sub {
+                $self->app->redirect( $base_url . '/?url=/swagger.json' );
+            },
+        );
 
+        $self->app->add_route(
+            method => 'get',
+            regexp => $base_url . '/',
+            code => sub {
+                my $file = $self->ui_dir->child('index.html');
 
-        send_error "file not found", 404 unless -f $file;
+                $self->app->send_error( "file not found", 404 ) unless -f $file;
 
-        return $file->slurp;
-    };
+                return $file->slurp;
+            }
+        );
 
-    get $base_url.'/**' => sub {
-        my $file = $plugin->ui_dir->child( @{ (splat())[0] } );
+        $self->app->add_route(
+            method => 'get',
+            regexp => $base_url . '/**',
+            code => sub {
+                my $file = $self->ui_dir->child( @{ (splat())[0] } );
 
-        send_error "file not found", 404 unless -f $file;
+                $self->app->send_error( "file not found", 404 ) unless -f $file;
 
-        send_file $file, system_path => 1;
-    };
-
+                send_file $file, system_path => 1;
+            }
+        );
+    }
+    
 }
 
-# TODO make the doc url configurable
-
-get '/swagger.json' => sub {
-    $plugin->doc
-};
-
-register swagger_auto_discover => sub {
-    my %args = @_;
+sub swagger_auto_discover :PluginKeyword {
+    my( $plugin, %args ) = @_;
 
     $args{skip} ||= $plugin->auto_discover_skip;
 
-    my $routes = Dancer::App->current->registry->routes;
+    my $routes = Dancer2::App->current->registry->routes;
 
     my $doc = $plugin->doc->{paths};
 
@@ -172,17 +183,17 @@ register swagger_auto_discover => sub {
 
             my $path = Dancer2::Plugin::OpenAPI::Path->new( route => $r );
 
-            warn "adding $path";
-
             $path->add_to_doc($plugin->doc);
 
         }
     }
 };
 
-register swagger_path => sub {
+sub swagger_path :PluginKeyword {
+    my $plugin = shift;
+
     my @routes;
-    push @routes, pop @_ while eval { $_[-1]->isa('Dancer::Route') };
+    push @routes, pop @_ while eval { $_[-1]->isa('Dancer2::Route') };
 
     # we don't process HEAD
     @routes = grep { $_->method ne 'head' } @routes;
@@ -241,7 +252,8 @@ register swagger_path => sub {
     }
 };
 
-register swagger_template => sub {
+sub swagger_template :PluginKeyword {
+    my $plugin = shift;
 
     my $vars = pop;
     my $status = shift || Dancer::status();
@@ -253,7 +265,9 @@ register swagger_template => sub {
     return swagger_response( $status, $template ? $template->($vars) : $vars );
 };
 
-sub swagger_response {
+sub swagger_response :PluginKeyword {
+    my $plugin = shift;
+
     my $data = pop;
 
     my $status = Dancer::status(@_);
@@ -265,9 +279,9 @@ sub swagger_response {
     $data;
 }
 
-register swagger_response => \&swagger_response;
+sub swagger_definition :PluginKeyword {
+    my $plugin = shift;
 
-register swagger_definition => sub {
     my( $name, $def ) = @_;
 
     $plugin->doc->{definitions} ||= {};
@@ -276,9 +290,7 @@ register swagger_definition => sub {
 
     return { '$ref', => '#/definitions/'.$name };
 
-};
-
-register_plugin;
+}
 
 1;
 
