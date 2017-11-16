@@ -63,6 +63,9 @@ has main_api_module => (
     lazy => 1,
     from_config => 1,
     default => sub { 
+        # TODO does that still work with the D2 stuff?
+        # add test to make sure that this attribute gets
+        # the right default
         $Dancer2::Plugin::OpenAPI::FIRST_LOADED ||= caller;
     },
 );
@@ -72,9 +75,12 @@ has main_api_module_content => (
     lazy => 1,
     default => sub { 
         my $mod = $_[0]->main_api_module or return '';
+
         $mod =~ s#::#/#g;
         $mod .= '.pm';
-        Path::Tiny::path( $INC{$mod} )->slurp;
+        my $path = $INC{$mod} or return '';
+
+        return Path::Tiny::path($path)->slurp;
     }
 );
 
