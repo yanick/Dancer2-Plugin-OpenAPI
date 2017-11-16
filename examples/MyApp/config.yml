@@ -38,6 +38,6 @@ plugins:
 #     start_tag: '[%'
 #     end_tag:   '%]'
 
-# For session support enable the following line and see Dancer::Session
+# For session support enable the following line and see Dancer2::Session
 # session: "YAML"
 

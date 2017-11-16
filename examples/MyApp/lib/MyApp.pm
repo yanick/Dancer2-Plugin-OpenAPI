@@ -7,7 +7,7 @@ MyApp - Dancing Web Service
 
 =cut
 
-use Dancer::Plugin::Swagger;
+use Dancer2::Plugin::OpenAPI;
 
 our $VERSION = '0.1';
 

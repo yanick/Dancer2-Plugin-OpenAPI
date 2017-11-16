@@ -101,7 +101,7 @@ has ui_dir => (
     lazy => 1,
     from_config => sub { 
         Path::Tiny::path(
-                File::ShareDir::Tarball::dist_dir('Dancer-Plugin-Swagger')
+                File::ShareDir::Tarball::dist_dir('Dancer2-Plugin-OpenAPI')
         )
     },
 );
@@ -264,11 +264,11 @@ sub swagger_template :PluginKeyword {
     my $plugin = shift;
 
     my $vars = pop;
-    my $status = shift || Dancer::status();
+    my $status = shift || Dancer2::status();
 
     my $template = $Dancer2::Plugin::OpenAPI::THIS_ACTION->{responses}{$status}{template};
 
-    Dancer::status( $status ) if $status =~ /^\d{3}$/;
+    Dancer2::status( $status ) if $status =~ /^\d{3}$/;
 
     return swagger_response( $status, $template ? $template->($vars) : $vars );
 };
@@ -278,7 +278,7 @@ sub swagger_response :PluginKeyword {
 
     my $data = pop;
 
-    my $status = Dancer::status(@_);
+    my $status = Dancer2::status(@_);
 
     $Dancer2::Plugin::OpenAPI::THIS_ACTION->validate_response( 
         $status => $data, $plugin->strict_validation 
@@ -526,7 +526,7 @@ Possible responses from the path. Must be a hashref.
     get '/judge/:judge_name' => { ... };
 
 If the key C<example> is given (instead of C<examples> as defined by the Swagger specs), 
-and the serializer used by the application is L<Dancer::Serializer::JSON> or L<Dancer::Serializer::YAML>,
+and the serializer used by the application is L<Dancer2::Serializer::JSON> or L<Dancer2::Serializer::YAML>,
 the example will be expanded to have the right content-type key.
 
     swagger_path {
@@ -644,7 +644,7 @@ See the F<examples/> directory of the distribution for a working example.
 
 =item L<http://swagger.io/|Swagger>
 
-=item L<Dancer::Plugin::Swagger>
+=item L<Dancer2::Plugin::OpenAPI>
 
 The original plugin, for Dancer1.
 

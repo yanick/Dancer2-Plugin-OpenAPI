@@ -4,7 +4,7 @@ use Dancer;
 
 use Moo;
 
-extends 'Dancer::Response';
+extends 'Dancer2::Response';
 
 use overload '&{}' => \&gen_from_example,
                 '""' => sub { (shift)->{status} };
