@@ -9,14 +9,14 @@ use Test::More tests => 2;
 use Test::Deep;
 
 
-use Dancer ':tests';
+use Dancer2;
 
-use Dancer::Plugin::Swagger;
+use Dancer2::Plugin::OpenAPI;
 
 set serializer => 'JSON';
-Dancer::Plugin::Swagger->instance->{main_api_module_content} = '';
 
-$::mech = Test::WWW::Mechanize::PSGI->new( app => Dancer::Handler->psgi_app );
+my $app = TestMe->to_app;
+$::mech = Test::WWW::Mechanize::PSGI->new( app => $app );
 
 sub swagger_path_test {
     my $name = shift;
@@ -45,7 +45,7 @@ swagger_path_test '/definitions' => {
         default => { schema => $Judge },
     },
 }, sub {
-    cmp_deeply $Dancer::Plugin::Swagger::THIS_ACTION->responses, {
+    cmp_deeply $Dancer2::Plugin::OpenAPI::THIS_ACTION->responses, {
         default => { schema => $Judge },
     };
 };
