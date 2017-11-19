@@ -5,7 +5,7 @@ use warnings;
 
 use  Test::WWW::Mechanize::PSGI;
 
-use Test::More tests => 6;
+use Test::More tests => 7;
 use Test::Deep;
 
     use Dancer2;
@@ -30,6 +30,11 @@ use Test::Deep;
     }, 
     get '/description/first_arg' => sub {};
 
+
+    get '/swagger_template' => sub {
+        return swagger_template;
+    };
+
 my $app = TestMe->to_app;
 $::mech = Test::WWW::Mechanize::PSGI->new( app => $app );
 
@@ -43,6 +48,7 @@ sub swagger_path_test {
     };
 }
 
+$::mech->get_ok( '/swagger_template' );
 
 swagger_path_test '/parameters/standard' => {
     parameters => [
