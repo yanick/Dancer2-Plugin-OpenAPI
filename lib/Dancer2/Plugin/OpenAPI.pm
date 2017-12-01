@@ -181,6 +181,7 @@ sub swagger_auto_discover :PluginKeyword {
 
     for my $method ( qw/ get post put delete / ) {
         for my $r ( @{ $routes->{$method} } ) {
+print "*********\$r is ", $r,"\n";
             my $pattern = $r->pattern;
 
             next if ref $pattern eq 'Regexp';
@@ -264,11 +265,11 @@ sub swagger_template :PluginKeyword {
     my $plugin = shift;
 
     my $vars = pop;
-    my $status = shift || Dancer2::status();
+    my $status = shift || $Dancer2::Core::Route::RESPONSE->status( @_ );
 
     my $template = $Dancer2::Plugin::OpenAPI::THIS_ACTION->{responses}{$status}{template};
 
-    Dancer2::status( $status ) if $status =~ /^\d{3}$/;
+    $Dancer2::Core::Route::RESPONSE->status( $status ) if $status =~ /^\d{3}$/;
 
     return swagger_response( $status, $template ? $template->($vars) : $vars );
 };
@@ -278,9 +279,10 @@ sub swagger_response :PluginKeyword {
 
     my $data = pop;
 
-    my $status = Dancer2::status(@_);
-
-    $Dancer2::Plugin::OpenAPI::THIS_ACTION->validate_response( 
+    my $status = $Dancer2::Core::Route::RESPONSE->status(@_);
+#    $Dancer2::Plugin::OpenAPI::THIS_ACTION->validate_response( 
+            my $path = Dancer2::Plugin::OpenAPI::Path->new();
+$path->validate_response(
         $status => $data, $plugin->strict_validation 
     ) if $plugin->validate_response;
 

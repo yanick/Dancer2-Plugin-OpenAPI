@@ -35,6 +35,8 @@ use Test::Deep;
         return swagger_template;
     };
 
+#swagger_auto_discover;
+
 my $app = TestMe->to_app;
 $::mech = Test::WWW::Mechanize::PSGI->new( app => $app );
 
