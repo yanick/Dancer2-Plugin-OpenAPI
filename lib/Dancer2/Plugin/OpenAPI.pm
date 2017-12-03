@@ -271,7 +271,7 @@ sub swagger_template :PluginKeyword {
 
     $Dancer2::Core::Route::RESPONSE->status( $status ) if $status =~ /^\d{3}$/;
 
-    return swagger_response( $status, $template ? $template->($vars) : $vars );
+    return $plugin->swagger_response( $status, $template ? $template->($vars) : $vars );
 };
 
 sub swagger_response :PluginKeyword {
