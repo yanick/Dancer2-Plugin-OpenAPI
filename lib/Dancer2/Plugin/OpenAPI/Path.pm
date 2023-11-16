@@ -1,10 +1,10 @@
 package Dancer2::Plugin::OpenAPI::Path;
-# ABSTRACT: Internal representation of a swagger path
+# ABSTRACT: Internal representation of a OpenAPI path
 
 =head1 DESCRIPTION
 
 Objects of this class are used by L<Dancer2::Plugin::OpenAPI> to represent
-a path in the Swagger document.
+a path in the OpenAPI document.
 
 =cut
 
