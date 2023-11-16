@@ -4,9 +4,7 @@
 requires "Carp" => "0";
 requires "Class::Load" => "0";
 requires "Clone" => "0";
-requires "Dancer" => "0";
 requires "Dancer2::Plugin" => "0";
-requires "Dancer2::Response" => "0";
 requires "File::ShareDir::Tarball" => "0";
 requires "Hash::Merge" => "0";
 requires "JSON" => "0";
@@ -16,7 +14,6 @@ requires "MooseX::MungeHas" => "0";
 requires "Path::Tiny" => "0";
 requires "PerlX::Maybe" => "0";
 requires "Scalar::Util" => "0";
-requires "overload" => "0";
 requires "strict" => "0";
 requires "warnings" => "0";
 

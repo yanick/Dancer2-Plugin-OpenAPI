@@ -46,7 +46,6 @@ examples/MyApp2/views/index.tt
 examples/MyApp2/views/layouts/main.tt
 lib/Dancer2/Plugin/OpenAPI.pm
 lib/Dancer2/Plugin/OpenAPI/Path.pm
-lib/Dancer2/Plugin/OpenAPI/Response.pm
 share/shared-files.tar.gz
 t/00-compile.t
 t/00-report-prereqs.dd
