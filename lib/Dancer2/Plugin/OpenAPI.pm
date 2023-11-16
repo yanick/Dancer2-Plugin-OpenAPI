@@ -125,7 +125,7 @@ sub BUILD {
     # TODO make the doc url configurable
     $self->app->add_route(
         method => 'get',
-        regexp => '/swagger.json',
+        regexp => '/openapi.json',
         code => sub { $self->doc },
     );
 
