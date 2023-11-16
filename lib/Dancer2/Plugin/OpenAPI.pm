@@ -7,7 +7,7 @@
 # TODO: make /swagger.json configurable
 
 package Dancer2::Plugin::OpenAPI;
-# ABSTRACT: create openAPI documentation of your application
+# ABSTRACT: create OpenAPI documentation of your application
 
 use strict;
 use warnings;
@@ -29,7 +29,7 @@ has doc => (
         my $self = shift;
 
         my $doc = {
-            swagger => '2.0',
+            openapi => '3.1.0',
             paths => {},
         };
 
