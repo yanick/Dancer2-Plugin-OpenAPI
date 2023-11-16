@@ -172,11 +172,10 @@ sub openapi_auto_discover :PluginKeyword {
 
     my $routes = Dancer2::App->current->registry->routes;
 
-    my $doc = $plugin->doc->{paths};
+    # my $doc = $plugin->doc->{paths};
 
     for my $method ( qw/ get post put delete / ) {
         for my $r ( @{ $routes->{$method} } ) {
-print "*********\$r is ", $r,"\n";
             my $pattern = $r->pattern;
 
             next if ref $pattern eq 'Regexp';
@@ -188,7 +187,6 @@ print "*********\$r is ", $r,"\n";
                 route => $r );
 
             $path->add_to_doc($plugin->doc);
-
         }
     }
 };
