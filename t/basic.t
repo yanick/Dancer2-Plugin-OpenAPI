@@ -13,15 +13,15 @@ use Test::Deep;
 
     set serializer => 'JSON';
 
-    swagger_path
+    openapi_path
         get '/stuff' => sub { };
 
-    swagger_path {
+    openapi_path {
         description => 'standard',
     },
     get '/description/standard' => sub {};
 
-    swagger_path q{
+    openapi_path q{
         shortcut
 
         with some blahs
@@ -31,28 +31,28 @@ use Test::Deep;
     get '/description/first_arg' => sub {};
 
 
-    get '/swagger_template' => sub {
-        return swagger_template;
+    get '/openapi_template' => sub {
+        return openapi_template;
     };
 
-#swagger_auto_discover;
+#openapi_auto_discover;
 
 my $app = TestMe->to_app;
 $::mech = Test::WWW::Mechanize::PSGI->new( app => $app );
 
-sub swagger_path_test {
+sub openapi_path_test {
     my $name = shift;
     my $test = pop;
     my $args = shift;
     subtest $name => sub {
-        swagger_path $args, get $name, sub { $test->() };
+        openapi_path $args, get $name, sub { $test->() };
         $::mech->get_ok( $name );
     };
 }
 
-$::mech->get_ok( '/swagger_template' );
+$::mech->get_ok( '/openapi_template' );
 
-swagger_path_test '/parameters/standard' => {
+openapi_path_test '/parameters/standard' => {
     parameters => [
         { name => 'foo', in => 'query', type => 'string' },
         { name => 'bar', in => 'query', type => 'string' },
@@ -64,7 +64,7 @@ swagger_path_test '/parameters/standard' => {
     ];
 };
 
-swagger_path_test '/parameters/hash', {
+openapi_path_test '/parameters/hash', {
     parameters => {
         foo => { in => 'query', type => 'string' },
         bar => { in => 'query', type => 'string' },
@@ -76,7 +76,7 @@ swagger_path_test '/parameters/hash', {
     ];
 };
 
-swagger_path_test '/parameters/defaults', {
+openapi_path_test '/parameters/defaults', {
     parameters => {
         foo => 'FOO',
         bar => { type => 'string' },
@@ -88,7 +88,7 @@ swagger_path_test '/parameters/defaults', {
     ];
 };
 
-swagger_path_test '/parameters/array_with_keys', {
+openapi_path_test '/parameters/array_with_keys', {
     parameters => [
         foo => 'FOO',
         bar => { type => 'string' },

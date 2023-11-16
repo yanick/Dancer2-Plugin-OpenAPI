@@ -18,17 +18,17 @@ set serializer => 'JSON';
 my $app = TestMe->to_app;
 $::mech = Test::WWW::Mechanize::PSGI->new( app => $app );
 
-sub swagger_path_test {
+sub openapi_path_test {
     my $name = shift;
     my $test = pop;
     my $args = shift;
     subtest $name => sub {
-        swagger_path $args, get $name, sub { $test->() };
+        openapi_path $args, get $name, sub { $test->() };
         $::mech->get_ok( $name );
     };
 }
 
-my $Judge = swagger_definition 'Judge' => {
+my $Judge = openapi_definition 'Judge' => {
     type => 'object',
     required => [ 'fullname' ],
     properties => {
@@ -38,9 +38,9 @@ my $Judge = swagger_definition 'Judge' => {
 };
 
 cmp_deeply $Judge => { '$ref' => '#/definitions/Judge' }, 
-    "swagger_definition returns shortcut";
+    "openapi_definition returns shortcut";
 
-swagger_path_test '/definitions' => {
+openapi_path_test '/definitions' => {
     responses => {
         default => { schema => $Judge },
     },
