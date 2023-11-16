@@ -13,12 +13,9 @@ use strict;
 use warnings;
 
 use Dancer2::Plugin;
-use Dancer2::Plugin::REST;
 use PerlX::Maybe;
 
 use Dancer2::Plugin::OpenAPI::Path;
-
-use Moo;
 
 use MooseX::MungeHas 'is_ro';
 
@@ -188,7 +185,9 @@ print "*********\$r is ", $r,"\n";
 
             next if grep { ref $_ ? $pattern =~ $_ : $pattern eq $_ } @{ $args{skip} };
 
-            my $path = Dancer2::Plugin::OpenAPI::Path->new( route => $r );
+            my $path = Dancer2::Plugin::OpenAPI::Path->new( 
+                plugin => $plugin,
+                route => $r );
 
             $path->add_to_doc($plugin->doc);
 
@@ -248,7 +247,7 @@ sub swagger_path :PluginKeyword {
 
 
     for my $route ( @routes ) {
-        my $path = Dancer2::Plugin::OpenAPI::Path->new(%$arg, route => $route);
+        my $path = Dancer2::Plugin::OpenAPI::Path->new(%$arg, route => $route, plugin => $plugin );
 
         $path->add_to_doc( $plugin->doc );
 
@@ -281,7 +280,7 @@ sub swagger_response :PluginKeyword {
 
     my $status = $Dancer2::Core::Route::RESPONSE->status(@_);
 #    $Dancer2::Plugin::OpenAPI::THIS_ACTION->validate_response( 
-            my $path = Dancer2::Plugin::OpenAPI::Path->new();
+            my $path = Dancer2::Plugin::OpenAPI::Path->new(plugin=>$plugin);
 $path->validate_response(
         $status => $data, $plugin->strict_validation 
     ) if $plugin->validate_response;

@@ -26,13 +26,14 @@ has route => ( handles => [ 'pattern' ] );
 
 has tags => ( predicate => 1 );
 
+has plugin => ();
+
 has method => sub {
     eval { $_[0]->route->method } 
         or croak "no route or explicit method provided to path";
 };
 
 has path => sub {
-    $DB::single = 1;
     dancer_pattern_to_swagger_path( $_[0]->route->spec_route );
 };
 
@@ -89,7 +90,8 @@ sub add_to_doc {
             delete $r->{template};
 
             if( my $example = delete $r->{example} ) {
-                my $serializer = Dancer2::engine('serializer');
+                my $serializer = 
+                    $self->plugin->app->serializer_engine;
                 die "Don't know content type for serializer ", ref $serializer
                     if none { $serializer->isa($_) } qw/ Dancer2::Serializer::JSON Dancer2::Serializer::YAML /;
                 $r->{examples}{$serializer->content_type} = $example;

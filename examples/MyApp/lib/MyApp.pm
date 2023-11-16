@@ -1,5 +1,6 @@
 package MyApp;
-use Dancer ':syntax';
+
+use Dancer2;
 
 =head1 NAME
 

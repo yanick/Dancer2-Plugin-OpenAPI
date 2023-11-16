@@ -23,8 +23,9 @@ template: "simple"
 serializer: JSON
 
 engines:
-    JSON:
-        canonical: 1
+    serializer:
+      JSON:
+          canonical: 1
 
 plugins:
     Swagger:
