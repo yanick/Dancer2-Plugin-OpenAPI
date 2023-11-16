@@ -23,8 +23,9 @@ template: "simple"
 serializer: JSON
 
 engines:
-    JSON:
-        canonical: 1
+    serializer:
+      JSON:
+          canonical: 1
 
 plugins:
     Swagger:
@@ -38,6 +39,6 @@ plugins:
 #     start_tag: '[%'
 #     end_tag:   '%]'
 
-# For session support enable the following line and see Dancer::Session
+# For session support enable the following line and see Dancer2::Session
 # session: "YAML"
 

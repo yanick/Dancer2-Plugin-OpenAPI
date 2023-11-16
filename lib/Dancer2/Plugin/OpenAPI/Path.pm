@@ -1,10 +1,10 @@
 package Dancer2::Plugin::OpenAPI::Path;
-# ABSTRACT: Internal representation of a swagger path
+# ABSTRACT: Internal representation of a OpenAPI path
 
 =head1 DESCRIPTION
 
-Objects of this class are used by L<Dancer::Plugin::Swagger> to represent
-a path in the Swagger document.
+Objects of this class are used by L<Dancer2::Plugin::OpenAPI> to represent
+a path in the OpenAPI document.
 
 =cut
 
@@ -26,13 +26,14 @@ has route => ( handles => [ 'pattern' ] );
 
 has tags => ( predicate => 1 );
 
+has plugin => ();
+
 has method => sub {
     eval { $_[0]->route->method } 
         or croak "no route or explicit method provided to path";
 };
 
 has path => sub {
-    $DB::single = 1;
     dancer_pattern_to_swagger_path( $_[0]->route->spec_route );
 };
 
@@ -89,9 +90,10 @@ sub add_to_doc {
             delete $r->{template};
 
             if( my $example = delete $r->{example} ) {
-                my $serializer = Dancer::engine('serializer');
+                my $serializer = 
+                    $self->plugin->app->serializer_engine;
                 die "Don't know content type for serializer ", ref $serializer
-                    if none { $serializer->isa($_) } qw/ Dancer::Serializer::JSON Dancer::Serializer::YAML /;
+                    if none { $serializer->isa($_) } qw/ Dancer2::Serializer::JSON Dancer2::Serializer::YAML /;
                 $r->{examples}{$serializer->content_type} = $example;
             }
         }
@@ -110,7 +112,7 @@ sub validate_response {
 
     return unless $schema;
 
-    my $plugin = Dancer::Plugin::Swagger->instance;
+    my $plugin = Dancer2::Plugin::OpenAPI->instance;
 
     $schema = {
         definitions => $plugin->doc->{definitions},

@@ -1,5 +1,6 @@
 package MyApp;
-use Dancer ':syntax';
+
+use Dancer2;
 
 =head1 NAME
 
@@ -7,7 +8,7 @@ MyApp - Dancing Web Service
 
 =cut
 
-use Dancer::Plugin::Swagger;
+use Dancer2::Plugin::OpenAPI;
 
 our $VERSION = '0.1';
 

@@ -18,6 +18,7 @@ charset: "UTF-8"
 # simple: default and very basic template engine
 # template_toolkit: TT
 
+serializer: JSON
 template: "simple"
 
 # template: "template_toolkit"
