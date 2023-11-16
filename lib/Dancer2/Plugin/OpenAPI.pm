@@ -14,6 +14,7 @@ use warnings;
 
 use Dancer2::Plugin;
 use PerlX::Maybe;
+use Scalar::Util qw/ blessed /;
 
 use Dancer2::Plugin::OpenAPI::Path;
 
@@ -53,17 +54,14 @@ has doc => (
     },
 );
 
-our $FIRST_LOADED;
+our $FIRST_LOADED = caller(1);
 
 has main_api_module => (
     is => 'ro',
     lazy => 1,
     from_config => 1,
     default => sub { 
-        # TODO does that still work with the D2 stuff?
-        # add test to make sure that this attribute gets
-        # the right default
-        $Dancer2::Plugin::OpenAPI::FIRST_LOADED ||= caller;
+        $Dancer2::Plugin::OpenAPI::FIRST_LOADED //= caller;
     },
 );
 
