@@ -4,8 +4,6 @@ Revision history for Dancer2-Plugin-OpenAPI
  [API CHANGES]
 
  [BUG FIXES]
- - Default for the main_api_module isn't properly
-    resolved for Perl < v5.36.0. (GH#4, bug report by eserte)
 
  [DOCUMENTATION]
 
@@ -14,6 +12,11 @@ Revision history for Dancer2-Plugin-OpenAPI
  [NEW FEATURES]
 
  [STATISTICS]
+
+1.0.1 2023-11-18
+ [BUG FIXES]
+ - Default for the main_api_module isn't properly resolved for Perl <
+   v5.36.0. (GH#4, bug report by eserte)
 
 1.0.0 2023-11-16
  [API CHANGES]
