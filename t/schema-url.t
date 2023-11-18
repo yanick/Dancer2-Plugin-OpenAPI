@@ -20,7 +20,13 @@ ok $resp->is_success, "/openapi.json exists";
 
 my $body = from_json $resp->content;
 
-is $body->{info}{version} => '6.1.3';
-is $body->{info}{title} => 'MyApp';
+if( $] lt '5.036' ) {
+    is $body->{info}{version} => '0.0.0';
+    ok !$body->{info}{title};
+}
+else {
+    is $body->{info}{version} => '6.1.3';
+    is $body->{info}{title} => 'MyApp';
+}
 
 done_testing;

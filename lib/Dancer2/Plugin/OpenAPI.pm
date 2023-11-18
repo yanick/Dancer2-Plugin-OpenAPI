@@ -61,6 +61,8 @@ has main_api_module => (
     lazy => 1,
     from_config => 1,
     default => sub { 
+        return if $] lt '5.036000';
+
         $Dancer2::Plugin::OpenAPI::FIRST_LOADED //= caller;
     },
 );
@@ -351,8 +353,7 @@ Overview of C<Dancer2::Plugin::OpenAPI>'s features:
 If not provided explicitly, the OpenApi document's title and version will be set
 to the abstract and version of this module. 
 
-Defaults to the first
-module to import L<Dancer2::Plugin::OpenAPI>.
+For Perl >= 5.36.0, defaults to the first module to import L<Dancer2::Plugin::OpenAPI>.
 
 =head2 show_ui
 
