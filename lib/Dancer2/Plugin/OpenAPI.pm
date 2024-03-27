@@ -7,8 +7,9 @@
 # TODO: make /swagger.json configurable
 
 package Dancer2::Plugin::OpenAPI;
+our $AUTHORITY = 'cpan:YANICK';
 # ABSTRACT: create OpenAPI documentation of your application
-
+$Dancer2::Plugin::OpenAPI::VERSION = '1.0.2';
 use strict;
 use warnings;
 
@@ -303,6 +304,17 @@ sub openapi_definition :PluginKeyword {
 
 __END__
 
+=pod
+
+=encoding UTF-8
+
+=head1 NAME
+
+Dancer2::Plugin::OpenAPI - create OpenAPI documentation of your application
+
+=head1 VERSION
+
+version 1.0.2
 
 =head1 SYNOPSIS
 
@@ -316,7 +328,6 @@ __END__
     get '/choreograph/:name' => sub { ... };
 
     1;
-
 
 =head1 DESCRIPTION
 
@@ -334,7 +345,6 @@ Overview of C<Dancer2::Plugin::OpenAPI>'s features:
 =item Can provide a OpenAPI UI version of the OpenAPI documentation.
 
 =back
-
 
 =head1 CONFIGURATION
 
@@ -547,7 +557,6 @@ the example will be expanded to have the right content-type key.
 The special key C<template> will not appear in the OpenAPI doc, but will be
 used by the C<openapi_template> plugin keyword.
 
-
 =back
 
 =head2 openapi_template $code, $args
@@ -565,7 +574,6 @@ used by the C<openapi_template> plugin keyword.
 
 Calls the template for the C<$code> response, passing it C<$args>. If C<$code> is numerical, also set
 the response's status to that value. 
-
 
 =head2 openapi_auto_discover skip => \@list
 
@@ -596,7 +604,6 @@ to automatically make them look nice.
 
         # won't be picked up
     get qr#/user/(\d+)# => ...;
-
 
 Note that routes defined after C<openapi_auto_discover> has been called won't 
 be added to the OpenAPI document. Typically, you'll want C<openapi_auto_discover>
@@ -630,8 +637,6 @@ schemas are used.
         },
     },
     get '/judge/:name' => sub { ... };
-    
-
 
 =head1 EXAMPLES
 
@@ -647,8 +652,17 @@ See the F<examples/> directory of the distribution for a working example.
 
 The original plugin, for Dancer1.
 
-
 =back
 
-=cut
+=head1 AUTHOR
 
+Yanick Champoux <yanick@cpan.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2024 by Yanick Champoux.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
