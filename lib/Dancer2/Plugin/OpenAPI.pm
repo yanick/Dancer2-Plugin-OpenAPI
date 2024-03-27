@@ -148,7 +148,7 @@ sub BUILD {
 
                 $self->app->send_error( "file not found", 404 ) unless -f $file;
 
-                return $file->slurp;
+                return $self->app->send_as( html => $file->slurp );
             }
         );
 
