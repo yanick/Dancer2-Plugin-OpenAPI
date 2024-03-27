@@ -4,6 +4,7 @@ Revision history for Dancer2-Plugin-OpenAPI
  [API CHANGES]
 
  [BUG FIXES]
+ - The Swagger-UI wasn't made accessible.
 
  [DOCUMENTATION]
 
